@@ -8,7 +8,7 @@ def calc_plasma_stored_energy(
     average_electron_density: Unitfull,
     average_electron_temp: Unitfull,
     average_ion_density: Unitfull,
-    summed_impurity_density: Unitfull,
+    summed_impurity_average_density: Unitfull,
     average_ion_temp: Unitfull,
     plasma_volume: Unitfull,
 ) -> Unitfull:
@@ -18,7 +18,7 @@ def calc_plasma_stored_energy(
         average_electron_density: :term:`glossary link<average_electron_density>`
         average_electron_temp: :term:`glossary link<average_electron_temp>`
         average_ion_density: :term:`glossary link<average_ion_density>`
-        summed_impurity_density: :term:`glossary link<summed_impurity_density>`
+        summed_impurity_average_density: :term:`glossary link<summed_impurity_average_density>`
         average_ion_temp: :term:`glossary link<average_ion_temp>`
         plasma_volume: :term:`glossary link<plasma_volume>`
 
@@ -27,7 +27,10 @@ def calc_plasma_stored_energy(
     """
     Wp = (
         (3.0 / 2.0)
-        * ((average_electron_density * average_electron_temp) + ((average_ion_density + summed_impurity_density) * average_ion_temp))
+        * (
+            (average_electron_density * average_electron_temp)
+            + ((average_ion_density + summed_impurity_average_density) * average_ion_temp)
+        )
         * plasma_volume
     )
 

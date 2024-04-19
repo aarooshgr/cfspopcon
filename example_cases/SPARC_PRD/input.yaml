@@ -4,6 +4,7 @@ algorithms:
   # and temperature, which defines a stored energy stored_energy. From this,
   # we can compute P_in from stored_energy and a tau_e scaling.
   - read_atomic_data
+  - calc_line_averaged_electron_density
   - calc_separatrix_elongation_from_areal_elongation
   - calc_separatrix_triangularity_from_triangularity95
   - calc_minor_radius_from_inverse_aspect_ratio
@@ -18,6 +19,7 @@ algorithms:
   - calc_plasma_stored_energy
   - read_confinement_scalings
   - solve_tau_e_scaling_for_input_power
+  - calc_average_total_pressure
   # Once we have P_in (=P_loss in steady-state), we want to split
   # it into components. For this, we need to estimate 1D plasma
   # profiles in the confined region.
@@ -67,7 +69,6 @@ algorithms:
   # then use the two-point-model to determine how much edge seeding we
   # require to protect the divertor.
   - calculate_power_crossing_separatrix
-  - calc_average_total_pressure
   - calc_PB_over_R
   - calc_PBpRnSq
   - calc_B_pol_omp
@@ -167,6 +168,8 @@ ion_density_peaking_offset: -0.2
 temperature_peaking: 2.5
 # Ratio of volume-averaged temperatures (Ti / Te)
 ion_to_electron_temp_ratio: 1.0
+# Ratio of line-averaged to volume-averaged electron densities
+line_averaged_density_frac: 1.0
 
 # Ratio of confinement-mode threshold power to scaling
 confinement_threshold_scalar: 1.0

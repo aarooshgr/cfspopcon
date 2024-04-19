@@ -13,7 +13,7 @@ from .read_energy_confinement_scalings import ConfinementScaling
         confinement_time_scalar=ureg.dimensionless,
         plasma_current=ureg.MA,
         magnetic_field_on_axis=ureg.T,
-        average_electron_density=ureg.n19,
+        line_averaged_electron_density=ureg.n19,
         major_radius=ureg.m,
         areal_elongation=ureg.dimensionless,
         separatrix_elongation=ureg.dimensionless,
@@ -31,7 +31,7 @@ def solve_tau_e_scaling_for_input_power(
     confinement_time_scalar: float,
     plasma_current: float,
     magnetic_field_on_axis: float,
-    average_electron_density: float,
+    line_averaged_electron_density: float,
     major_radius: float,
     areal_elongation: float,
     separatrix_elongation: float,
@@ -100,7 +100,7 @@ def solve_tau_e_scaling_for_input_power(
         confinement_time_scalar: [~] confinement scaling factor
         plasma_current: [MA] :term:`glossary link<plasma_current>`
         magnetic_field_on_axis: [T] :term:`glossary link<magnetic_field_on_axis>`
-        average_electron_density: [1e19 m^-3] :term:`glossary link<average_electron_density>`
+        line_averaged_electron_density: [1e19 m^-3] :term:`glossary link<line_averaged_electron_density>`
         major_radius: [m] :term:`glossary link<major_radius>`
         areal_elongation: [~] :term:`glossary link<areal_elongation>`
         separatrix_elongation: [~] :term:`glossary link<separatrix_elongation>`
@@ -122,7 +122,7 @@ def solve_tau_e_scaling_for_input_power(
         * scaling.constant
         * plasma_current**scaling.plasma_current_alpha
         * magnetic_field_on_axis**scaling.field_on_axis_alpha
-        * average_electron_density**scaling.average_density_alpha
+        * line_averaged_electron_density**scaling.average_density_alpha
         * major_radius**scaling.major_radius_alpha
         * areal_elongation**scaling.areal_elongation_alpha
         * separatrix_elongation**scaling.separatrix_elongation_alpha

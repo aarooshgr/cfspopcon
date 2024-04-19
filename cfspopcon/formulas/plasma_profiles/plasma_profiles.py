@@ -32,6 +32,7 @@ from .numerical_profile_fits import evaluate_density_and_temperature_profile_fit
 def calc_peaked_profiles(
     profile_form: ProfileForm,
     average_electron_density: Unitfull,
+    line_averaged_electron_density: Unitfull,
     average_electron_temp: Unitfull,
     average_ion_temp: Unitfull,
     ion_density_peaking_offset: Unitfull,
@@ -48,6 +49,7 @@ def calc_peaked_profiles(
     Args:
         profile_form: :term:`glossary link<profile_form>`
         average_electron_density: :term:`glossary link<average_electron_density>`
+        line_averaged_electron_density: :term:`glossary link<line_averaged_electron_density>`
         average_electron_temp: :term:`glossary link<average_electron_temp>`
         average_ion_temp: :term:`glossary link<average_ion_temp>`
         ion_density_peaking_offset: :term:`glossary link<ion_density_peaking_offset>`
@@ -63,12 +65,14 @@ def calc_peaked_profiles(
     `effective_collisionality`, :term:`ion_density_peaking`, :term:`electron_density_peaking`, :term:`peak_electron_density`, :term:`peak_electron_temp`, :term:`peak_ion_temp`, :term:`rho`, :term:`electron_density_profile`, :term:`fuel_ion_density_profile`, :term:`electron_temp_profile`, :term:`ion_temp_profile`
 
     """
-    effective_collisionality = calc_effective_collisionality(average_electron_density, average_electron_temp, major_radius, z_effective)
+    effective_collisionality = calc_effective_collisionality(
+        line_averaged_electron_density, average_electron_temp, major_radius, z_effective
+    )
     ion_density_peaking = calc_density_peaking(effective_collisionality, beta_toroidal, nu_noffset=ion_density_peaking_offset)
     electron_density_peaking = calc_density_peaking(effective_collisionality, beta_toroidal, nu_noffset=electron_density_peaking_offset)
 
-    peak_electron_density = average_electron_density * electron_density_peaking
-    peak_fuel_ion_density = average_electron_density * dilution * ion_density_peaking
+    peak_electron_density = line_averaged_electron_density * electron_density_peaking
+    peak_fuel_ion_density = line_averaged_electron_density * dilution * ion_density_peaking
     peak_electron_temp = average_electron_temp * temperature_peaking
     peak_ion_temp = average_ion_temp * temperature_peaking
 
@@ -77,6 +81,7 @@ def calc_peaked_profiles(
     (rho, electron_density_profile, fuel_ion_density_profile, electron_temp_profile, ion_temp_profile,) = calc_1D_plasma_profiles(
         profile_form,
         average_electron_density,
+        line_averaged_electron_density,
         average_electron_temp,
         average_ion_temp,
         electron_density_peaking,
@@ -116,6 +121,7 @@ def calc_peaked_profiles(
     input_units=dict(
         profile_form=None,
         average_electron_density=ureg.n19,
+        line_averaged_electron_density=ureg.n19,
         average_electron_temp=ureg.keV,
         average_ion_temp=ureg.keV,
         electron_density_peaking=ureg.dimensionless,
@@ -130,6 +136,7 @@ def calc_peaked_profiles(
 def calc_1D_plasma_profiles(
     profile_form: ProfileForm,
     average_electron_density: float,
+    line_averaged_electron_density: float,
     average_electron_temp: float,
     average_ion_temp: float,
     electron_density_peaking: float,
@@ -144,6 +151,7 @@ def calc_1D_plasma_profiles(
     Args:
         profile_form: select between analytic fit or profiles from Pablo Rodriguez-Fernandez
         average_electron_density: [1e19 m^-3] :term:`glossary link<average_electron_density>`
+        line_averaged_electron_density: [1e19 m^-3] :term:`glossary link<line_averaged_electron_density>`
         average_electron_temp: [keV] :term:`glossary link<average_electron_temp>`
         average_ion_temp: [keV] :term:`glossary link<average_ion_temp>`
         electron_density_peaking: [~] :term:`glossary link<electron_density_peaking>`
@@ -161,7 +169,7 @@ def calc_1D_plasma_profiles(
     """
     if profile_form == ProfileForm.analytic:
         rho, electron_density_profile, fuel_ion_density_profile, electron_temp_profile, ion_temp_profile = calc_analytic_profiles(
-            average_electron_density,
+            line_averaged_electron_density,
             average_electron_temp,
             average_ion_temp,
             electron_density_peaking,
@@ -191,7 +199,7 @@ def calc_1D_plasma_profiles(
 
 
 def calc_analytic_profiles(
-    average_electron_density: float,
+    line_averaged_electron_density: float,
     average_electron_temp: float,
     average_ion_temp: float,
     electron_density_peaking: float,
@@ -203,7 +211,7 @@ def calc_analytic_profiles(
     """Estimate density and temperature profiles using a simple analytic fit.
 
     Args:
-        average_electron_density: [1e19 m^-3] :term:`glossary link<average_electron_density>`
+        line_averaged_electron_density: [1e19 m^-3] :term:`glossary link<line_averaged_electron_density>`
         average_electron_temp: [keV] :term:`glossary link<average_electron_temp>`
         average_ion_temp: [keV] :term:`glossary link<average_ion_temp>`
         electron_density_peaking: [~] :term:`glossary link<electron_density_peaking>`
@@ -218,10 +226,10 @@ def calc_analytic_profiles(
     rho = np.linspace(0, 1, num=npoints, endpoint=False)
 
     electron_density_profile = (
-        average_electron_density * electron_density_peaking * ((1.0 - rho**2.0) ** (electron_density_peaking - 1.0))
+        line_averaged_electron_density * electron_density_peaking * ((1.0 - rho**2.0) ** (electron_density_peaking - 1.0))
     )
     fuel_ion_density_profile = (
-        average_electron_density * dilution * (ion_density_peaking) * ((1.0 - rho**2.0) ** (ion_density_peaking - 1.0))
+        line_averaged_electron_density * dilution * (ion_density_peaking) * ((1.0 - rho**2.0) ** (ion_density_peaking - 1.0))
     )
     electron_temp_profile = average_electron_temp * temperature_peaking * ((1.0 - rho**2.0) ** (temperature_peaking - 1.0))
     ion_temp_profile = average_ion_temp * temperature_peaking * ((1.0 - rho**2.0) ** (temperature_peaking - 1.0))

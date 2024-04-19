@@ -4,6 +4,7 @@ calc_1D_plasma_profiles:
   inputs:
   - profile_form
   - average_electron_density
+  - line_averaged_electron_density
   - average_electron_temp
   - average_ion_temp
   - electron_density_peaking
@@ -113,6 +114,7 @@ calc_average_total_pressure:
   inputs:
   - average_electron_density
   - average_electron_temp
+  - average_ion_density
   - average_ion_temp
   optionals: []
   returns:
@@ -128,9 +130,7 @@ calc_beta_normalized:
   - normalized_beta
 calc_beta_poloidal:
   inputs:
-  - average_electron_density
-  - average_electron_temp
-  - average_ion_temp
+  - average_total_pressure
   - plasma_current
   - minor_radius
   optionals: []
@@ -138,9 +138,7 @@ calc_beta_poloidal:
   - beta_poloidal
 calc_beta_toroidal:
   inputs:
-  - average_electron_density
-  - average_electron_temp
-  - average_ion_temp
+  - average_total_pressure
   - magnetic_field_on_axis
   optionals: []
   returns:
@@ -306,7 +304,7 @@ calc_greenwald_density_limit:
   - greenwald_density_limit
 calc_greenwald_fraction:
   inputs:
-  - average_electron_density
+  - line_averaged_electron_density
   - inverse_aspect_ratio
   - major_radius
   - plasma_current
@@ -360,6 +358,13 @@ calc_lambda_q:
   optionals: []
   returns:
   - lambda_q
+calc_line_averaged_electron_density:
+  inputs:
+  - average_electron_density
+  - line_averaged_density_frac
+  optionals: []
+  returns:
+  - line_averaged_electron_density
 calc_loop_voltage:
   inputs:
   - major_radius
@@ -439,6 +444,7 @@ calc_peaked_profiles:
   inputs:
   - profile_form
   - average_electron_density
+  - line_averaged_electron_density
   - average_electron_temp
   - average_ion_temp
   - ion_density_peaking_offset
@@ -478,7 +484,7 @@ calc_plasma_stored_energy:
   - average_electron_density
   - average_electron_temp
   - average_ion_density
-  - summed_impurity_density
+  - summed_impurity_average_density
   - average_ion_temp
   - plasma_volume
   optionals: []
@@ -626,7 +632,7 @@ calc_zeff_and_dilution_due_to_impurities:
   - impurity_charge_state
   - z_effective
   - dilution
-  - summed_impurity_density
+  - summed_impurity_average_density
   - average_ion_density
 calculate_power_crossing_separatrix:
   inputs:
@@ -657,7 +663,7 @@ solve_tau_e_scaling_for_input_power:
   - confinement_time_scalar
   - plasma_current
   - magnetic_field_on_axis
-  - average_electron_density
+  - line_averaged_electron_density
   - major_radius
   - areal_elongation
   - separatrix_elongation
@@ -677,7 +683,7 @@ switch_to_linearised_ohmic_confinement_below_threshold:
   - plasma_stored_energy
   - energy_confinement_time
   - P_in
-  - average_electron_density
+  - line_averaged_electron_density
   - confinement_time_scalar
   - plasma_current
   - magnetic_field_on_axis
@@ -699,7 +705,7 @@ two_point_model_fixed_fpow:
   - SOL_power_loss_fraction
   - q_parallel
   - parallel_connection_length
-  - average_electron_density
+  - line_averaged_electron_density
   - nesep_over_nebar
   - toroidal_flux_expansion
   - fuel_average_mass_number

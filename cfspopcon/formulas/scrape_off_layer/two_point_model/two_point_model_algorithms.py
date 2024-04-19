@@ -23,7 +23,7 @@ def two_point_model_fixed_fpow(
     SOL_power_loss_fraction: Unitfull,
     q_parallel: Unitfull,
     parallel_connection_length: Unitfull,
-    average_electron_density: Unitfull,
+    line_averaged_electron_density: Unitfull,
     nesep_over_nebar: Unitfull,
     toroidal_flux_expansion: Unitfull,
     fuel_average_mass_number: Unitfull,
@@ -37,7 +37,7 @@ def two_point_model_fixed_fpow(
         SOL_power_loss_fraction: :term:`glossary link<SOL_power_loss_fraction>`
         q_parallel: :term:`glossary link<q_parallel>`
         parallel_connection_length: :term:`glossary link<parallel_connection_length>`
-        average_electron_density: :term:`glossary link<average_electron_density>`
+        line_averaged_electron_density: :term:`glossary link<line_averaged_electron_density>`
         nesep_over_nebar: :term:`glossary link<nesep_over_nebar>`
         toroidal_flux_expansion: :term:`glossary link<toroidal_flux_expansion>`
         fuel_average_mass_number: :term:`glossary link<fuel_average_mass_number>`
@@ -52,7 +52,7 @@ def two_point_model_fixed_fpow(
         SOL_power_loss_fraction=SOL_power_loss_fraction,
         parallel_heat_flux_density=q_parallel,
         parallel_connection_length=parallel_connection_length,
-        upstream_electron_density=nesep_over_nebar * average_electron_density,
+        upstream_electron_density=nesep_over_nebar * line_averaged_electron_density,
         toroidal_flux_expansion=toroidal_flux_expansion,
         fuel_average_mass_number=fuel_average_mass_number,
         kappa_e0=kappa_e0,
