@@ -22,6 +22,7 @@ Setting up a virtual environment and installing all dependencies required to dev
 .. code::
 
   >>> poetry install
+  >>> poetry run radas -d ./radas_dir
 
 If you are new to Poetry, we suggest that you at least read their brief introduction on `how to use this virtual environment <https://python-poetry.org/docs/basic-usage/#using-your-virtual-environment>`_.
 You can verify that everything worked as expected by following the :ref:`Getting Started <gettingstarted>` guide.
@@ -62,9 +63,9 @@ To make reading & validating formulas easier, we additionally follow the below g
 - Functions that handle dimensional quantities should use :class:`pint.Quantity`.
 
 Please note, that while we have some checks for docstrings, those checks do not cover all aspects.
-So let's look at a basic example, the :func:`~cfspopcon.formulas.calc_plasma_volume` function:
+So let's look at a basic example, the :func:`~cfspopcon.formulas.geometry.calc_plasma_volume` function:
 
-.. literalinclude:: ../../cfspopcon/formulas/geometry.py
+.. literalinclude:: ../../cfspopcon/formulas/geometry/analytical.py
   :language: python
   :linenos:
   :pyobject: calc_plasma_volume
@@ -82,7 +83,7 @@ This is because all calculations in cfspopcon use explicit unit handling to bett
 The units handling cfspopcon is powered by the `pint <https://pint.readthedocs.io/en/stable/>`_ and `pint-xarray <https://github.com/xarray-contrib/pint-xarray>`_ python packages.
 The type :class:`~cfspopcon.unit_handling.Unitfull`, used in the above function as type annotation, is an alias of :code:`pint.Quantity | xarray.DataArray`.
 
-In addition to the above example, we also recommend having a look at the :mod:`~cfspopcon.formulas` module, which holds many good examples.
+In addition to the above example, we also recommend having a look at the :code:`cfspopcon.formulas` module, which holds many good examples.
 
 
 Pre-Commit Checks

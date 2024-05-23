@@ -1,10 +1,9 @@
 import numpy as np
 
-from cfspopcon.point_selection import find_coords_of_maximum
+from cfspopcon.shaping_and_selection.point_selection import find_coords_of_maximum
 
 
 def test_find_coords(ds):
-
     coords = find_coords_of_maximum(ds.z3)
     assert np.isclose(ds.z3.max(), ds.isel(coords).z3)
 

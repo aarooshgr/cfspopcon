@@ -7,8 +7,13 @@ import numpy as np
 import xarray as xr
 
 from .helpers import convert_named_options
-from .point_selection import build_mask_from_dict, find_coords_of_minimum
+from .shaping_and_selection.point_selection import build_mask_from_dict, find_coords_of_minimum
 from .unit_handling import convert_to_default_units, set_default_units
+
+ignored_keys = [
+    "radas_dir",
+    "atomic_data",
+]
 
 
 def sanitize_variable(val: xr.DataArray, key: str) -> xr.DataArray:
@@ -32,12 +37,19 @@ def write_dataset_to_netcdf(
 ) -> None:
     """Write a dataset to a NetCDF file."""
     serialized_dataset = dataset.copy()
-    for key in dataset.keys():
-        assert isinstance(key, str)  # because hashable type of key is broader str but we  know it's str
+    for key in ignored_keys:
+        assert isinstance(key, str)  # for type-checking
+        # errors="ignore" prevents drop_vars from raising a ValueError if key
+        # is not in serialized_dataset. This is necessary for writing a dataset
+        # that has previously been read from file (i.e. round-trip file I/O)
+        serialized_dataset = serialized_dataset.drop_vars(key, errors="ignore")
+
+    for key in serialized_dataset.keys():  # type:ignore[assignment]
+        assert isinstance(key, str)
         serialized_dataset[key] = sanitize_variable(dataset[key], key)
 
-    for key in dataset.coords:
-        assert isinstance(key, str)  # because hashable type of key is broader str but we  know it's str
+    for key in serialized_dataset.coords:  # type:ignore[assignment]
+        assert isinstance(key, str)
         serialized_dataset[key] = sanitize_variable(dataset[key], key)
 
     serialized_dataset.to_netcdf(filepath, engine=netcdf_writer)
@@ -72,7 +84,7 @@ def read_dataset_from_netcdf(filepath: Path) -> xr.Dataset:
         if key == "dim_species":
             dataset[key] = promote_variable(dataset[key], key="impurity")
         else:
-            assert isinstance(key, str)  # because hashable type of key is broader str but we  know it's str
+            assert isinstance(key, str)
             dataset[key] = promote_variable(dataset[key], key)
 
     return dataset
@@ -93,13 +105,17 @@ def write_point_to_file(dataset: xr.Dataset, point_key: str, point_params: dict,
     point_coords = find_coords_of_minimum(array, keep_dims=point_params.get("keep_dims", []), mask=mask)
 
     point = dataset.isel(point_coords)
+    for key in point.keys():
+        if key in ignored_keys:
+            assert isinstance(key, str)
+            point = point.drop_vars(key, errors="ignore")
 
     for key in point.keys():
-        assert isinstance(key, str)  # because hashable type of key is broader str but we  know it's str
+        assert isinstance(key, str)
         point[key] = sanitize_variable(point[key], key)
 
     for key in point.coords:
-        assert isinstance(key, str)  # because hashable type of key is broader str but we  know it's str
+        assert isinstance(key, str)
         point[key] = sanitize_variable(point[key], key)
 
     output_dir.mkdir(parents=True, exist_ok=True)

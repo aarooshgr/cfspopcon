@@ -1,7 +1,10 @@
 from pathlib import Path
 
 import pytest
+import xarray as xr
 import yaml
+
+xr.set_options(display_width=300)
 
 
 @pytest.fixture(scope="session")

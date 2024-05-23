@@ -64,8 +64,11 @@ Physics Glossary
   upstream
     The point where heat enters the flux-tube being considered for the two-point-model. Usually 'upstream' means the outboard-midplane separatrix.
 
-  upstream_electron_temp
+  separatrix_electron_temp
     The :term:`upstream` electron temperature.
+  
+  separatrix_electron_density
+    The :term:`upstream` electron density.
 
   target_electron_density
     The :term:`target` electron density.
@@ -120,15 +123,15 @@ Physics Glossary
     :math:`P_{SOL}B_0/R`, a metric used to estimate how challenging heat exhaust will be.
 
   atomic_data
-    Dictionary mapping :class:`~cfspopcon.named_options.Impurity` to datasets giving coronal and non-coronal :math:`L_z` radiated power factors and :math:`\langle Z \rangle` mean charge state curves from `radas <https://github.com/cfs-energy/radas>`_.
+    Dictionary mapping :class:`~cfspopcon.named_options.AtomicSpecies` to datasets giving coronal and non-coronal :math:`L_z` radiated power factors and :math:`\langle Z \rangle` mean charge state curves from `radas <https://github.com/cfs-energy/radas>`_.
 
   impurities
     A :class:`xarray.DataArray` giving the concentration of non-fuel species relative to the electron density.
-    This array must have a dimension `dim_species` with :class:`~cfspopcon.named_options.Impurity` coordinates.
+    This array must have a dimension `dim_species` with :class:`~cfspopcon.named_options.AtomicSpecies` coordinates.
     There are several functions in the :mod:`cfspopcon.helpers` module to help you make and extend the `impurities` array.
 
   impurity_species
-    An :class:`~cfspopcon.named_options.Impurity` indicating which non-fuel atomic species we are performing a calculation for.
+    An :class:`~cfspopcon.named_options.AtomicSpecies` indicating which non-fuel atomic species we are performing a calculation for.
 
   impurity_concentration
     Concentration of a non-fuel atomic species relative to the electron density :math:`c_Z = n_Z / n_e`.
@@ -140,7 +143,7 @@ Physics Glossary
     Ratio of the average electron density to the Greenwald density limit :math:`f_{G}=\bar n_e / n_G`.
 
   tau_i
-    Impurity residence/recycling time, which leads to a non-coronal enhancement of radiated power.
+    AtomicSpecies residence/recycling time, which leads to a non-coronal enhancement of radiated power.
 
   radiated_power_method
     A :class:`~cfspopcon.named_options.RadiationMethod` indicating how we should calculate the power radiated from the confined region.
@@ -149,13 +152,19 @@ Physics Glossary
     Fuel-species concentration as a fraction of the electron density :math:`n_{DT}/n_e`.
 
   core_radiator
-    An :class:`~cfspopcon.named_options.Impurity` indicating which :term:`extrinsic<extrinsic impurity>` core radiator species should be injected into the confined region to enhance the core radiated power.
+    An :class:`~cfspopcon.named_options.AtomicSpecies` indicating which :term:`extrinsic<extrinsic impurity>` core radiator species should be injected into the confined region to enhance the core radiated power.
 
   core_radiator_charge_state
     Charge state of the :term:`extrinsic<extrinsic impurity>` core radiator.
 
   core_radiator_concentration
     Concentration of the :term:`extrinsic<extrinsic impurity>` core radiator required to achieve the desired core radiated power fraction, relative to the electron density :math:`c_{core} = n_{core}/n_e`.
+
+  mean_ion_charge_state
+    Mean charge state of the ions (:math:`n_e / \sum_j n_j`)
+  
+  ion_to_electron_temp_ratio
+    Ratio of electron and ion temperatures, :math:`T_i/T_e`.
 
   electron_density_profile
     A 1D profile of the electron density as a function of :math:`\rho_{pol}`.
@@ -214,6 +223,7 @@ Physics Glossary
   areal_elongation
     Elongation of the confined region computed using the poloidal area inside the last-closed-flux-surface :math:`\kappa_A = S_{pol} / (\pi a^2)`.
 
+  beta
   beta_toroidal
     Ratio of plasma pressure to magnetic pressure provided by the toroidal magnetic field.
 
@@ -223,6 +233,7 @@ Physics Glossary
   beta_total
     Ratio of plasma pressure to magnetic pressure provided by the total magnetic field.
 
+  normalized_beta
   beta_N
     Ratio of plasma pressure to magnetic pressure provided by the total magnetic field, normalized to :math:`I_MA / a B_0`.
 
@@ -238,6 +249,7 @@ Physics Glossary
   f_shaping
     Shaping factor used to compute :math:`q_*`.
 
+  ion_mass
   fuel_average_mass_number
     Average mass of fuel ions, with the average weighted by the relative concentration of each species.
 
@@ -321,15 +333,15 @@ Physics Glossary
   plasma_stored_energy
     Thermal energy in the plasma.
 
+  qstar
   q_star
     Analytical approximation of safety factor at :math:`\rho=0.95`.
 
   loop_voltage
     inductive loop voltage
 
-  energy_confinement_scaling
   tau_e_scaling
-    A :class:`~cfspopcon.named_options.ConfinementScaling` indicating which :math:`\tau_e` energy confinement scaling should be used.
+    Which :math:`\tau_e` energy confinement scaling should be used. Should match a confinement scaling in `cfspopcon.formulas.energy_confinement::energy_confinement_scalings.yaml`.
 
   energy_confinement_time
     A characteristic time which gives the rate at which the plasma loses energy. In steady-state, :math:`\tau_e=W_p / P_in`.
@@ -366,8 +378,77 @@ Physics Glossary
     Product of the major radius and the (vacuum) magnetic field :math:`B \times R`.
 
   fusion_reaction
-    A :class:`~cfspopcon.named_options.ReactionType` indicating which fusion reaction should be used.
+    A `str` indicating which fusion reaction should be used, should match a class name in `cfspopcon.formulas.fusion_reaction.fusion_data`
 
   heavier_fuel_species_fraction
     Fraction of fuel ions which are the heavier species. i.e. for DT fusion, this is :math:`f_T = n_T/(n_T+n_D)`.
 
+  lengyel_overestimation_factor
+    A constant calibration factor applied to the impurity concentration calculated by the Lengyel model such that its value approximately matches the value calculated by higher fidelity modelling such as SOLPS.
+
+  reference_electron_density
+    A constant upstream electron density used when evaluating the :math:`L_Z` impurity radiation curve (due to the reasonably weak dependence of :math:`L_Z` on :math:`n_e`, this approximation shouldn't be too harmful).
+
+  reference_ne_tau
+    A constant :math:`n_e\tau` (upstream electron density times impurity residence time) used when evaluating the :math:`L_Z` impurity radiation curve.
+
+  edge_impurity_species
+    An :class:`~cfspopcon.named_options.AtomicSpecies` indicating which :term:`extrinsic<extrinsic impurity>` edge radiator species should be injected into the confined region to enhance the edge radiated power.
+
+  edge_impurity_enrichment
+    Ratio of concentration of the edge radiator in the core to in the edge, :math:`f_e = n_{edge}/n_{core}`.
+
+  edge_impurity_concentration
+    Concentration of the edge radiator (impurity density relative to the electron density) in the edge.
+
+  confinement_threshold_scalar
+    Scalar value applied to the confinement threshold (:math:`P_{LH}` or :math:`P_{LI}`), used to study the effect of increasing or decreasing the threshold.
+  
+  Lmode_density_limit_condition
+    Condition function for the L-mode density limit (calculated by the separatrix operational space). If $c_{LDL} > 1$, the state is predicted to be unstable.
+  
+  ideal_MHD_limit_condition
+    Condition function for the ideal MHD limit (calculated by the separatrix operational space). If $c_{MHD} > 1$, the state is predicted to be unstable.
+  
+  LH_transition_condition
+    Condition function for the LH limit (calculated by the separatrix operational space). If $c_{LH} > 1$, the state is predicted to be in H-mode.
+  
+  alpha_t
+  alpha_t_turbulence_param
+    Turbulence characterization parameter used by the separatrix operational space.
+  
+  cylindrical_safety_factor
+    Analytical approximation of safety factor at :math:`\rho=0.95` (confusingly, still has some shaping corrections despite being called the 'cylindrical' safety factor).
+
+  edge_collisionality
+    Collisionality at the separatrix.
+
+  critical_alpha_MHD
+    Critical value of :math:`\alpha_{MHD}` used in the separatrix operational space.
+
+  poloidal_sound_larmor_radius
+    The sound Larmor radius using the poloidal magnetic field.
+
+  SepOS_density_limit
+    Less than 1 if an L-mode is below the density limit, according to the separatrix operational space.
+
+  SepOS_LH_transition
+    Less than 1 if in L-mode and greater than 1 if in H-mode, according to the separatrix operational space.
+
+  SepOS_MHD_limit
+    Less than 1 if below the ideal MHD limit, according to the separatrix operational space.
+
+  elongation_psi95
+    Usually denoted :math:`\kappa_{95}`, the elongation at the :math:`\psi_N=0.95` surface.
+
+  ion_heat_diffusivity
+    A heat diffusion constant which gives a heat flux corresponding to an ion temperature gradient.
+
+  temp_scale_length_ratio
+    The ratio of the electron and ion temperature scale lengths at the separatrix.
+
+  sustainment_power_in_ion_channel
+    The power in the ion channel required to maintain the ion temperature gradient at the separatrix.
+
+  sustainment_power_in_electron_channel
+    The power in the electron channel required to maintain the electron temperature at the separatrix.
